@@ -1,20 +1,10 @@
 {
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "rootDir": "./src",
-    "baseUrl": ".",
-    "paths": {
-      "@routes/*": ["src/routes/*"],
-      "@controllers/*": ["src/controllers/*"],
-    },
     "outDir": "./dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "skipLibCheck": true
-  }
+    "rootDir": "./src",
+    "strict": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist"]
 }

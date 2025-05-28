@@ -1,62 +1,120 @@
-import type { NextFunction, Request, Response } from "express";
+import { Recipe } from "#models/RecipeSchema.js";
+import {
+  CreateRecipeHandler,
+  DeleteRecipeHandler,
+  GetRecipeHandler,
+  ListRecipeHandler,
+  RecipeDocument,
+  UpdateRecipeHandler,
+} from "#types/models/Recipe.js";
+import { FilterQuery } from "mongoose";
 
-/** Testing only, remove after implementing real id query on checkResource */
-const ids = [1, 2, 3];
+export const index: ListRecipeHandler = async (req, res) => {
+  try {
+    const { name, ratings } = req.query;
 
-export const index = (req: Request, res: Response) => {
-  res.status(200).json({
-    data: null,
-    message: "Recipe List",
-    status: 200,
-  });
-};
+    const filter: FilterQuery<RecipeDocument> = {};
 
-export const show = (req: Request, res: Response) => {
-  const id = req.params.id;
+    if (name) {
+      filter.name = { $regex: name, $options: "i" };
+    }
 
-  res.status(200).json({
-    data: {
-      id,
-    },
-    message: "Recipe Information",
-    status: 200,
-  });
-};
+    if (ratings) {
+      const num = Number(ratings);
+      if (!Number.isNaN(num)) {
+        filter.ratings = num;
+      }
+    }
 
-export const store = (req: Request, res: Response) => {
-  // For now we'll not fix this because we are going to use zod later on
-  const body = req.body;
+    const recipes = await Recipe.find(filter);
 
-  res.status(200).json({
-    data: body,
-    message: "Recipe Created",
-    status: 200,
-  });
-};
-
-export const update = (req: Request, res: Response) => {
-  const body = req.body;
-
-  res.status(200).json({
-    data: body,
-    message: "Recipe Updated",
-    status: 200,
-  });
-};
-
-export const destroy = (req: Request, res: Response) => {
-  res.status(200).json({
-    message: "Recipe Deleted",
-    status: 200,
-  });
-};
-
-export const checkResource = (req: Request, res: Response, next: NextFunction, value: string) => {
-  // TODO: Change this to real query on next task
-  if (!ids.find((id) => id === parseInt(value))) {
-    res.status(404).json({
-      message: "Recipe ID not found",
+    res.status(200).json({
+      message: "Recipe List",
+      status: "success",
+      results: recipes.length,
+      data: recipes,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error,
     });
   }
-  next();
+};
+
+export const show: GetRecipeHandler = async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.id);
+
+    if (!recipe) {
+      res.status(404).json({
+        status: "fail",
+        message: "Recipe not found",
+      });
+    }
+
+    res.status(200).json({
+      data: recipe,
+      message: "Recipe Information",
+      status: "success",
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error,
+    });
+  }
+};
+
+export const store: CreateRecipeHandler = async (req, res) => {
+  try {
+    const recipe = await Recipe.create(req.body);
+
+    res.status(200).json({
+      data: recipe,
+      message: "Recipe Created",
+      status: "success",
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error,
+    });
+  }
+};
+
+export const update: UpdateRecipeHandler = async (req, res) => {
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      data: recipe,
+      message: "Recipe Updated",
+      status: "success",
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error,
+      status: "fail",
+    });
+  }
+};
+
+export const destroy: DeleteRecipeHandler = async (req, res) => {
+  try {
+    await Recipe.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      message: "Recipe Deleted",
+      status: "success",
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error,
+      status: "fail",
+    });
+  }
 };

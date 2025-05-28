@@ -5,9 +5,9 @@ const ids = [1, 2, 3];
 
 export const index = (req: Request, res: Response) => {
   res.status(200).json({
+    data: null,
     message: "Recipe List",
     status: 200,
-    data: null,
   });
 };
 
@@ -15,21 +15,22 @@ export const show = (req: Request, res: Response) => {
   const id = req.params.id;
 
   res.status(200).json({
-    message: "Recipe Information",
-    status: 200,
     data: {
       id,
     },
+    message: "Recipe Information",
+    status: 200,
   });
 };
 
 export const store = (req: Request, res: Response) => {
+  // For now we'll not fix this because we are going to use zod later on
   const body = req.body;
 
   res.status(200).json({
+    data: body,
     message: "Recipe Created",
     status: 200,
-    data: body,
   });
 };
 
@@ -37,9 +38,9 @@ export const update = (req: Request, res: Response) => {
   const body = req.body;
 
   res.status(200).json({
+    data: body,
     message: "Recipe Updated",
     status: 200,
-    data: body,
   });
 };
 

@@ -1,4 +1,4 @@
-import { checkResource, destroy, index, show, store, update } from "#controllers/recipeController.js";
+import { destroy, index, show, store, update } from "#controllers/recipeController.js";
 import { Router } from "express";
 import multer from "multer";
 
@@ -6,7 +6,7 @@ const upload = multer({ dest: "uploads/" });
 
 const recipeRoutes = Router();
 
-recipeRoutes.param("id", checkResource);
+// recipeRoutes.param("id");
 
 recipeRoutes.route("/").get(index).post([upload.none()], store);
 

@@ -1,32 +1,11 @@
+import { buildQuery } from "#api/recipe/api.js";
 import { Recipe } from "#models/RecipeSchema.js";
-import {
-  CreateRecipeHandler,
-  DeleteRecipeHandler,
-  GetRecipeHandler,
-  ListRecipeHandler,
-  RecipeDocument,
-  UpdateRecipeHandler,
-} from "#types/models/Recipe.js";
-import { FilterQuery } from "mongoose";
+import { CreateRecipeHandler, DeleteRecipeHandler, GetRecipeHandler, ListRecipeHandler, UpdateRecipeHandler } from "#types/models/Recipe.js";
 
 export const index: ListRecipeHandler = async (req, res) => {
   try {
-    const { name, ratings } = req.query;
-
-    const filter: FilterQuery<RecipeDocument> = {};
-
-    if (name) {
-      filter.name = { $regex: name, $options: "i" };
-    }
-
-    if (ratings) {
-      const num = Number(ratings);
-      if (!Number.isNaN(num)) {
-        filter.ratings = num;
-      }
-    }
-
-    const recipes = await Recipe.find(filter);
+    const query = buildQuery(req.query);
+    const recipes = await query;
 
     res.status(200).json({
       message: "Recipe List",

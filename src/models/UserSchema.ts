@@ -1,6 +1,7 @@
 import { UserDocument } from "#types/models/User.js";
 import mongoose, { Model } from "mongoose";
 import argon2 from "argon2";
+import isEmail from "validator/lib/isEmail";
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
@@ -18,11 +19,16 @@ const userSchema = new mongoose.Schema<UserDocument>(
       type: String,
       required: [true, "A user must have a email"],
       unique: [true, "Email is already taken"],
+      validate: {
+        validator: (value: string) => isEmail(value),
+        message: "Please enter a valid email",
+      },
     },
     password: {
       type: String,
       required: [true, "A user must have a password"],
       select: false,
+      minlength: [8, "Password must be 8 or more characters."],
     },
     avatar: {
       type: String,

@@ -1,4 +1,4 @@
-import { destroy, index, show, store, update } from "#controllers/recipeController.js";
+import { destroy, getIngredient, getRecipeStats, index, show, store, update } from "#controllers/recipeController.js";
 import { Router } from "express";
 import multer from "multer";
 
@@ -15,6 +15,9 @@ const recipeRoutes = Router();
 // ?limit=5&sort=price,-ratings&fields=name,ratings,reviews,location
 // this is too long to remember, so using aliasing, we can just hit the
 // endpoint and we can have the results.
+
+recipeRoutes.route("/stats").get(getRecipeStats);
+recipeRoutes.route("/ingredients/:ingredient").get(getIngredient);
 
 recipeRoutes.route("/").get(index).post([upload.none()], store);
 

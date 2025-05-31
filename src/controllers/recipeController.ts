@@ -146,9 +146,17 @@ export const index: ListRecipeHandler = async (req, res) => {
       data: recipes,
     });
   } catch (error) {
+    let errorMessage: string;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = String(error);
+    }
+
     res.status(400).json({
       status: "fail",
-      message: error,
+      message: errorMessage,
     });
   }
 };
@@ -170,9 +178,17 @@ export const show: GetRecipeHandler = async (req, res) => {
       status: "success",
     });
   } catch (error) {
+    let errorMessage: string;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = String(error);
+    }
+
     res.status(400).json({
       status: "fail",
-      message: error,
+      message: errorMessage,
     });
   }
 };
@@ -187,9 +203,17 @@ export const store: CreateRecipeHandler = async (req, res) => {
       status: "success",
     });
   } catch (error) {
+    let errorMessage: string;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = String(error);
+    }
+
     res.status(400).json({
       status: "fail",
-      message: error,
+      message: errorMessage,
     });
   }
 };
@@ -207,9 +231,17 @@ export const update: UpdateRecipeHandler = async (req, res) => {
       status: "success",
     });
   } catch (error) {
+    let errorMessage: string;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = String(error);
+    }
+
     res.status(400).json({
-      message: error,
       status: "fail",
+      message: errorMessage,
     });
   }
 };
@@ -223,9 +255,17 @@ export const destroy: DeleteRecipeHandler = async (req, res) => {
       status: "success",
     });
   } catch (error) {
+    let errorMessage: string;
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = String(error);
+    }
+
     res.status(400).json({
-      message: error,
       status: "fail",
+      message: errorMessage,
     });
   }
 };

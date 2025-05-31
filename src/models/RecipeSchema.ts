@@ -70,4 +70,12 @@ recipeSchema.pre<Query<RecipeDocument, RecipeDocument>>(/^find/, function (next)
 //   next();
 // });
 
+// Custom Validators on column
+// validate: {
+//   // validators only points to current doc on New document creation
+//   validator: function (val) {
+//     return ...
+//   },
+//   message: "custom message"
+// }
 export const Recipe: Model<RecipeDocument> = mongoose.model<RecipeDocument>("Recipe", recipeSchema);

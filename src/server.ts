@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
+import qs from "qs";
 
 import router from "./routes";
 
@@ -9,6 +10,8 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT ?? "8000";
+
+app.set("query parser", (str: string) => qs.parse(str));
 
 mongoose
   .connect(process.env.MONGODB_URL ?? "")

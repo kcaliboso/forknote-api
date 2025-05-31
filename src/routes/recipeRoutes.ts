@@ -8,6 +8,14 @@ const recipeRoutes = Router();
 
 // recipeRoutes.param("id");
 
+// we can also make use of middlewares to set queries directly
+// before it goes inside the handlers/controllers.
+// This is a good strategy if our query params are too long already
+// and we need to 'alias' that route. for example, /top-5-cheapest-but-best-recipe.
+// ?limit=5&sort=price,-ratings&fields=name,ratings,reviews,location
+// this is too long to remember, so using aliasing, we can just hit the
+// endpoint and we can have the results.
+
 recipeRoutes.route("/").get(index).post([upload.none()], store);
 
 recipeRoutes.route("/:id").get(show).patch([upload.none()], update).delete(destroy);

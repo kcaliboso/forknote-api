@@ -4,11 +4,9 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import qs from "qs";
 
-import type { NextFunction, Request, Response } from "express";
-
 import router from "./routes";
 import { routeNotFound } from "#middlewares/routeNotFound.js";
-import { AppError } from "#types/AppError.js";
+import { globalErrorHandler } from "#middlewares/globalErrorHandler.js";
 
 dotenv.config();
 
@@ -43,15 +41,8 @@ app.use(routeNotFound);
 // and sending the same thing over and over again, it's better to use
 // Middlewares, (ErrorHandlingMiddleware needs 4 arguments)
 
-app.use((error: AppError, _req: Request, res: Response, _next: NextFunction) => {
-  error.statusCode = error.statusCode ?? 500;
-  error.status = error.status ?? "error";
+app.use(globalErrorHandler);
 
-  res.status(error.statusCode).json({
-    status: error.status,
-    message: error.message,
-  });
-});
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
 });

@@ -22,8 +22,8 @@ export interface Query {
 
 // Fourth type goes to QueryBody
 // RequestHandler is <Params, Response, Request, QueryBody>
-export type ListRecipeHandler = RequestHandler<unknown, ApiResponse<Recipe[]>, Recipe, IndexQueryType>;
-export type GetRecipeHandler = RequestHandler<{ id: string }, ApiResponse<Recipe>, unknown>;
-export type UpdateRecipeHandler = RequestHandler<{ id: string }, ApiResponse<Recipe>, Partial<Recipe>>;
-export type CreateRecipeHandler = RequestHandler<unknown, ApiResponse<Recipe>, Recipe>;
+export type ListRecipeHandler = RequestHandler<unknown, ApiResponse<RecipeDocument[]>, RecipeDocument, IndexQueryType>;
+export type GetRecipeHandler = RequestHandler<{ id: string }, ApiResponse<RecipeDocument>, unknown>;
+export type UpdateRecipeHandler = RequestHandler<{ id: string }, ApiResponse<RecipeDocument>, Partial<RecipeDocument>>;
+export type CreateRecipeHandler = RequestHandler<unknown, ApiResponse<RecipeDocument>, RecipeDocument>;
 export type DeleteRecipeHandler = RequestHandler<{ id: string }, ApiResponse<null>, unknown>;

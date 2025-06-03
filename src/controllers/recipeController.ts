@@ -1,7 +1,8 @@
 import { buildQuery } from "#api/recipe/api.js";
 import { Recipe } from "#models/RecipeSchema.js";
 import { CreateRecipeHandler, DeleteRecipeHandler, GetRecipeHandler, ListRecipeHandler, UpdateRecipeHandler } from "#types/models/Recipe.js";
-import { AppError } from "#utils/appError.js";
+import { AppErrorClass } from "#utils/appErrorClass.js";
+import { catchAsync } from "#utils/catchAsync.js";
 import type { Request, Response } from "express";
 
 // Aggregation Pipeline (match and group) for Mongoose/MongoDB, can  be used for dashboard statistics
@@ -135,83 +136,61 @@ export const getIngredient = async (req: Request, res: Response) => {
   }
 };
 
-export const index: ListRecipeHandler = async (req, res, next) => {
-  try {
-    const query = buildQuery(req.query);
-    const recipes = await query;
+export const index: ListRecipeHandler = catchAsync(async (req, res, _next) => {
+  const query = buildQuery(req.query);
+  const recipes = await query;
 
-    res.status(200).json({
-      message: "Recipe List",
-      status: "success",
-      results: recipes.length,
-      data: recipes,
-    });
-  } catch (_error) {
-    next(new AppError("Something went wrong"));
+  res.status(200).json({
+    message: "Recipe List",
+    status: "success",
+    results: recipes.length,
+    data: recipes,
+  });
+});
+
+export const show: GetRecipeHandler = catchAsync(async (req, res, next) => {
+  const recipe = await Recipe.findById(req.params.id);
+
+  if (!recipe) {
+    next(new AppErrorClass("Recipe not found", 404));
+    return;
   }
-};
 
-export const show: GetRecipeHandler = async (req, res, next) => {
-  try {
-    const recipe = await Recipe.findById(req.params.id);
+  res.status(200).json({
+    data: recipe,
+    message: "Recipe Information",
+    status: "success",
+  });
+});
 
-    if (!recipe) {
-      res.status(404).json({
-        status: "fail",
-        message: "Recipe not found",
-      });
-    }
+export const store: CreateRecipeHandler = catchAsync(async (req, res, _next) => {
+  const recipe = await Recipe.create(req.body);
 
-    res.status(200).json({
-      data: recipe,
-      message: "Recipe Information",
-      status: "success",
-    });
-  } catch (_error) {
-    next(new AppError("Something went wrong"));
-  }
-};
+  res.status(200).json({
+    data: recipe,
+    message: "Recipe Created",
+    status: "success",
+  });
+});
 
-export const store: CreateRecipeHandler = async (req, res, next) => {
-  try {
-    const recipe = await Recipe.create(req.body);
+export const update: UpdateRecipeHandler = catchAsync(async (req, res, _next) => {
+  const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
-    res.status(200).json({
-      data: recipe,
-      message: "Recipe Created",
-      status: "success",
-    });
-  } catch (_error) {
-    next(new AppError("Something went wrong"));
-  }
-};
+  res.status(200).json({
+    data: recipe,
+    message: "Recipe Updated",
+    status: "success",
+  });
+});
 
-export const update: UpdateRecipeHandler = async (req, res, next) => {
-  try {
-    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+export const destroy: DeleteRecipeHandler = catchAsync(async (req, res, _next) => {
+  await Recipe.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({
-      data: recipe,
-      message: "Recipe Updated",
-      status: "success",
-    });
-  } catch (_error) {
-    next(new AppError("Something went wrong"));
-  }
-};
-
-export const destroy: DeleteRecipeHandler = async (req, res, next) => {
-  try {
-    await Recipe.findByIdAndDelete(req.params.id);
-
-    res.status(200).json({
-      message: "Recipe Deleted",
-      status: "success",
-    });
-  } catch (_error) {
-    next(new AppError("Something went wrong"));
-  }
-};
+  res.status(200).json({
+    message: "Recipe Deleted",
+    status: "success",
+  });
+});

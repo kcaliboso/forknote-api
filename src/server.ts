@@ -5,6 +5,7 @@ import morgan from "morgan";
 import qs from "qs";
 
 import router from "./routes";
+import { routeNotFound } from "#middlewares/routeNotFound.js";
 
 dotenv.config();
 
@@ -29,6 +30,11 @@ mongoose
 app.use(morgan("dev"));
 
 app.use(router);
+
+// Handle routes that are not declared
+// After all the routes here.
+
+app.use(routeNotFound);
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);

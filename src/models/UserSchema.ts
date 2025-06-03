@@ -30,6 +30,16 @@ const userSchema = new mongoose.Schema<UserDocument>(
       select: false,
       minlength: [8, "Password must be 8 or more characters."],
     },
+    passwordConfirmation: {
+      type: String,
+      required: [true, "A user must have a password"],
+      validate: {
+        validator: function (value: string) {
+          return value === this.password;
+        },
+        message: "Password confirmation does not match.",
+      },
+    },
     avatar: {
       type: String,
     },
@@ -55,10 +65,19 @@ userSchema.virtual("fullName").get(function () {
 
 // Document Middleware for MongoDB
 // this runs before .save() and .create() (not .insertMany()) to the database
-userSchema.pre("save", async function (next) {
-  const hashedPassword = await argon2.hash(this.password);
-  this.password = hashedPassword;
+userSchema.pre("save", async function (this: UserDocument, next) {
+  // this will check if the password did not change
+  // if it didn't change it will return nothing.
+  // we checked it here for updating a user, if they only
+  // changed the other information, then we don't create another
+  // hashedpassword
+  if (!this.isModified("password")) {
+    next();
+    return;
+  }
 
+  this.password = await argon2.hash(this.password);
+  this.passwordConfirmation = undefined;
   next();
 });
 

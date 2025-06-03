@@ -1,6 +1,7 @@
 import { buildQuery } from "#api/recipe/api.js";
 import { Recipe } from "#models/RecipeSchema.js";
 import { CreateRecipeHandler, DeleteRecipeHandler, GetRecipeHandler, ListRecipeHandler, UpdateRecipeHandler } from "#types/models/Recipe.js";
+import { AppError } from "#utils/appError.js";
 import type { Request, Response } from "express";
 
 // Aggregation Pipeline (match and group) for Mongoose/MongoDB, can  be used for dashboard statistics
@@ -134,7 +135,7 @@ export const getIngredient = async (req: Request, res: Response) => {
   }
 };
 
-export const index: ListRecipeHandler = async (req, res) => {
+export const index: ListRecipeHandler = async (req, res, next) => {
   try {
     const query = buildQuery(req.query);
     const recipes = await query;
@@ -145,23 +146,12 @@ export const index: ListRecipeHandler = async (req, res) => {
       results: recipes.length,
       data: recipes,
     });
-  } catch (error) {
-    let errorMessage: string;
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else {
-      errorMessage = String(error);
-    }
-
-    res.status(400).json({
-      status: "fail",
-      message: errorMessage,
-    });
+  } catch (_error) {
+    next(new AppError("Something went wrong"));
   }
 };
 
-export const show: GetRecipeHandler = async (req, res) => {
+export const show: GetRecipeHandler = async (req, res, next) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
 
@@ -177,23 +167,12 @@ export const show: GetRecipeHandler = async (req, res) => {
       message: "Recipe Information",
       status: "success",
     });
-  } catch (error) {
-    let errorMessage: string;
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else {
-      errorMessage = String(error);
-    }
-
-    res.status(400).json({
-      status: "fail",
-      message: errorMessage,
-    });
+  } catch (_error) {
+    next(new AppError("Something went wrong"));
   }
 };
 
-export const store: CreateRecipeHandler = async (req, res) => {
+export const store: CreateRecipeHandler = async (req, res, next) => {
   try {
     const recipe = await Recipe.create(req.body);
 
@@ -202,23 +181,12 @@ export const store: CreateRecipeHandler = async (req, res) => {
       message: "Recipe Created",
       status: "success",
     });
-  } catch (error) {
-    let errorMessage: string;
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else {
-      errorMessage = String(error);
-    }
-
-    res.status(400).json({
-      status: "fail",
-      message: errorMessage,
-    });
+  } catch (_error) {
+    next(new AppError("Something went wrong"));
   }
 };
 
-export const update: UpdateRecipeHandler = async (req, res) => {
+export const update: UpdateRecipeHandler = async (req, res, next) => {
   try {
     const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -230,23 +198,12 @@ export const update: UpdateRecipeHandler = async (req, res) => {
       message: "Recipe Updated",
       status: "success",
     });
-  } catch (error) {
-    let errorMessage: string;
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else {
-      errorMessage = String(error);
-    }
-
-    res.status(400).json({
-      status: "fail",
-      message: errorMessage,
-    });
+  } catch (_error) {
+    next(new AppError("Something went wrong"));
   }
 };
 
-export const destroy: DeleteRecipeHandler = async (req, res) => {
+export const destroy: DeleteRecipeHandler = async (req, res, next) => {
   try {
     await Recipe.findByIdAndDelete(req.params.id);
 
@@ -254,18 +211,7 @@ export const destroy: DeleteRecipeHandler = async (req, res) => {
       message: "Recipe Deleted",
       status: "success",
     });
-  } catch (error) {
-    let errorMessage: string;
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else {
-      errorMessage = String(error);
-    }
-
-    res.status(400).json({
-      status: "fail",
-      message: errorMessage,
-    });
+  } catch (_error) {
+    next(new AppError("Something went wrong"));
   }
 };

@@ -1,5 +1,5 @@
 import { RecipeDocument } from "#types/models/Recipe.js";
-import mongoose, { Model, Query } from "mongoose";
+import mongoose, { Model } from "mongoose";
 // import User from "./UserSchema";
 
 const recipeSchema = new mongoose.Schema<RecipeDocument>(
@@ -46,16 +46,16 @@ const recipeSchema = new mongoose.Schema<RecipeDocument>(
 // Query Middleware Practice
 // Use mongoose Query type and inside that is the result and raw document types, that's
 // why we put two RecipeDocument because our results and raw document is the same.
-recipeSchema.pre<Query<RecipeDocument, RecipeDocument>>(/^find/, function (next) {
-  // remove recipes with 0 ratings
-  // the "this" here refers to the query, so it was just chained.
-  this.find({
-    ratings: {
-      $ne: 0,
-    },
-  });
-  next();
-});
+// recipeSchema.pre<Query<RecipeDocument, RecipeDocument>>(/^find/, function (next) {
+//   // remove recipes with 0 ratings
+//   // the "this" here refers to the query, so it was just chained.
+//   this.find({
+//     ratings: {
+//       $ne: 0,
+//     },
+//   });
+//   next();
+// });
 
 // this also removes it from findById, we can't use findById because
 // it's a wrapper, we need to use the under the hook query which is, findOne

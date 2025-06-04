@@ -8,6 +8,7 @@ import {
   RecipeDocument,
   UpdateRecipeHandler,
 } from "#types/models/Recipe.js";
+import { UserDocument } from "#types/models/User.js";
 import ApiResponse from "#types/responses/ApiResponse.js";
 import { AppErrorClass } from "#utils/appErrorClass.js";
 import { catchAsync } from "#utils/catchAsync.js";
@@ -174,7 +175,12 @@ export const show: GetRecipeHandler = catchAsync(async (req, res, next) => {
 });
 
 export const store: CreateRecipeHandler = catchAsync(async (req, res, _next) => {
-  const recipe = await Recipe.create(req.body);
+  const user = req.user as UserDocument;
+
+  const recipe = await Recipe.create({
+    ...req.body,
+    owner: user._id,
+  });
 
   res.status(200).json({
     data: recipe,

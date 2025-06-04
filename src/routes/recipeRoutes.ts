@@ -1,5 +1,7 @@
 import { destroy, getIngredient, getRecipeStats, index, show, store, update } from "#controllers/recipeController.js";
 import { isAuthenticated } from "#middlewares/isAuthenticated.js";
+import { isAuthorized } from "#middlewares/isAuthorized.js";
+import { Role } from "#types/enums/Role.js";
 import { Router } from "express";
 import multer from "multer";
 
@@ -20,9 +22,16 @@ const recipeRoutes = Router();
 recipeRoutes.route("/stats").get(getRecipeStats);
 recipeRoutes.route("/ingredients/:ingredient").get(getIngredient);
 
-recipeRoutes.route("/").get(index).post([upload.none(), isAuthenticated], store);
+recipeRoutes
+  .route("/")
+  .get(index)
+  .post([upload.none(), isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], store);
 
-recipeRoutes.route("/:id").get(show).patch([upload.none(), isAuthenticated], update).delete([isAuthenticated], destroy);
+recipeRoutes
+  .route("/:id")
+  .get(show)
+  .patch([upload.none(), isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], update)
+  .delete([isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], destroy);
 
 export default recipeRoutes;
 

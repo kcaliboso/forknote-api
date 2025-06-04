@@ -1,6 +1,5 @@
 import { RecipeDocument } from "#types/models/Recipe.js";
 import mongoose, { Model } from "mongoose";
-// import User from "./UserSchema";
 
 const recipeSchema = new mongoose.Schema<RecipeDocument>(
   {
@@ -27,21 +26,41 @@ const recipeSchema = new mongoose.Schema<RecipeDocument>(
     cover: {
       type: String,
     },
-    // owner: {
-    //   type: User,
-    //   required: [true, "A recipe must have an owner"],
-    // },
+    owner: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: [true, "A recipe must have an owner"],
+    },
     createdAt: {
       type: Date,
       default: Date.now(),
     },
   },
   {
+    timestamps: true,
     // outputted as json and object, we will append the virtual properties
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform(doc, ret) {
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+      transform(doc, ret) {
+        delete ret._id;
+        return ret;
+      },
+    },
   },
 );
+
+recipeSchema.virtual("savedByUsers", {
+  ref: "User",
+  localField: "_id",
+  foreignField: "savedRecipes",
+});
 
 // Query Middleware Practice
 // Use mongoose Query type and inside that is the result and raw document types, that's

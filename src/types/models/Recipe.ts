@@ -4,6 +4,7 @@ import { RequestHandler } from "express";
 import { Document } from "mongoose";
 
 import type { ParamsDictionary } from "express-serve-static-core";
+import { UserDocument } from "./User";
 
 export interface Recipe {
   name: string;
@@ -13,6 +14,7 @@ export interface Recipe {
   images?: string[];
   cover?: string;
   createdAt: Date;
+  owner: UserDocument;
 }
 
 export interface RecipeDocument extends Recipe, Document {}

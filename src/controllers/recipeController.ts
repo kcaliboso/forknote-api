@@ -1,9 +1,19 @@
 import { buildQuery } from "#api/recipe/api.js";
 import { Recipe } from "#models/RecipeSchema.js";
-import { CreateRecipeHandler, DeleteRecipeHandler, GetRecipeHandler, ListRecipeHandler, UpdateRecipeHandler } from "#types/models/Recipe.js";
+import {
+  CreateRecipeHandler,
+  DeleteRecipeHandler,
+  GetRecipeHandler,
+  ListRecipeHandler,
+  RecipeDocument,
+  UpdateRecipeHandler,
+} from "#types/models/Recipe.js";
+import ApiResponse from "#types/responses/ApiResponse.js";
 import { AppErrorClass } from "#utils/appErrorClass.js";
 import { catchAsync } from "#utils/catchAsync.js";
 import type { Request, Response } from "express";
+
+import type { ParamsDictionary } from "express-serve-static-core";
 
 // Aggregation Pipeline (match and group) for Mongoose/MongoDB, can  be used for dashboard statistics
 export const getRecipeStats = async (req: Request, res: Response) => {
@@ -173,18 +183,20 @@ export const store: CreateRecipeHandler = catchAsync(async (req, res, _next) => 
   });
 });
 
-export const update: UpdateRecipeHandler = catchAsync(async (req, res, _next) => {
-  const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+export const update: UpdateRecipeHandler = catchAsync<ParamsDictionary, ApiResponse<RecipeDocument>, Partial<RecipeDocument>>(
+  async (req, res, _next) => {
+    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-  res.status(200).json({
-    data: recipe,
-    message: "Recipe Updated",
-    status: "success",
-  });
-});
+    res.status(200).json({
+      data: recipe,
+      message: "Recipe Updated",
+      status: "success",
+    });
+  },
+);
 
 export const destroy: DeleteRecipeHandler = catchAsync(async (req, res, _next) => {
   await Recipe.findByIdAndDelete(req.params.id);

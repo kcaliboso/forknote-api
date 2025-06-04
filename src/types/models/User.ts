@@ -1,5 +1,6 @@
 import { Role } from "#types/enums/Role.js";
 import { Document } from "mongoose";
+import { Recipe } from "./Recipe";
 
 interface User {
   firstName: string;
@@ -10,6 +11,7 @@ interface User {
   avatar?: string;
   role: Role;
   passwordChangedAt?: Date;
+  savedRecipes?: Recipe[];
 }
 
 interface UserMethods {

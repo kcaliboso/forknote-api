@@ -50,14 +50,28 @@ const userSchema = new mongoose.Schema<UserDocument>(
       type: String,
     },
     passwordChangedAt: Date,
+    savedRecipes: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Recipe",
+      },
+    ],
   },
   {
     timestamps: true,
     toJSON: {
       virtuals: true,
+      transform(doc, ret) {
+        delete ret._id;
+        return ret;
+      },
     },
     toObject: {
       virtuals: true,
+      transform(doc, ret) {
+        delete ret._id;
+        return ret;
+      },
     },
   },
 );
@@ -69,6 +83,13 @@ const userSchema = new mongoose.Schema<UserDocument>(
 userSchema.virtual("fullName").get(function () {
   // we use this keyword here if we need to manipulate existing columns/properties
   return `${this.firstName} ${this.lastName}`;
+});
+
+// making virtuals for ownedRecipes
+userSchema.virtual("ownedRecipes", {
+  ref: "Recipe",
+  localField: "_id",
+  foreignField: "owner",
 });
 
 // Document Middleware for MongoDB

@@ -8,6 +8,8 @@ import dotenv from "dotenv";
 import { AppErrorClass } from "#utils/appErrorClass.js";
 import { jwtSign } from "#utils/authHelpers.js";
 
+import type { Request, Response } from "express";
+
 dotenv.config();
 
 if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
@@ -16,13 +18,15 @@ if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
 
 const APP_SECRET: Secret = process.env.APP_SECRET;
 
-export const signup = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, UserDocument>(async (req, res, _next) => {
+export const signup = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Partial<UserDocument>>(async (req, res, _next) => {
+  const { firstName, lastName, email, password, passwordConfirmation } = req.body;
+
   const newUser = await User.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirmation: req.body.passwordConfirmation,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    password: password,
+    passwordConfirmation: passwordConfirmation,
   });
 
   if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
@@ -70,3 +74,13 @@ export const login = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Par
     data: user,
   });
 });
+
+export const getUserInfo = (req: Request, res: Response) => {
+  const { user } = req;
+
+  res.status(200).json({
+    status: "success",
+    message: "User Information",
+    data: user,
+  });
+};

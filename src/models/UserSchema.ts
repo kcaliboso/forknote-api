@@ -49,8 +49,10 @@ const userSchema = new mongoose.Schema<UserDocument>(
     avatar: {
       type: String,
     },
+    passwordChangedAt: Date,
   },
   {
+    timestamps: true,
     toJSON: {
       virtuals: true,
     },
@@ -93,6 +95,14 @@ userSchema.pre("save", async function (this: UserDocument, next) {
 userSchema.methods.verifyPassword = async function (userHashedPassword: string, inputPassword: string): Promise<boolean> {
   // this.password will not be available since we have select: false
   return await argon2.verify(userHashedPassword, inputPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (this: UserDocument, tokenTimestamp: number) {
+  if (this.passwordChangedAt) {
+    const convert = parseInt((this.passwordChangedAt.getTime() / 1000).toString(), 10);
+    return tokenTimestamp < convert;
+  }
+  return false;
 };
 
 // Middlewares are pre('<hook>', function()), post('<hook>', function(doc, next)),

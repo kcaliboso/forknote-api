@@ -3,6 +3,8 @@ import ApiResponse from "#types/responses/ApiResponse.js";
 import { RequestHandler } from "express";
 import { Document } from "mongoose";
 
+import type { ParamsDictionary } from "express-serve-static-core";
+
 export interface Recipe {
   name: string;
   ingredients: string[];
@@ -22,8 +24,8 @@ export interface Query {
 
 // Fourth type goes to QueryBody
 // RequestHandler is <Params, Response, Request, QueryBody>
-export type ListRecipeHandler = RequestHandler<unknown, ApiResponse<RecipeDocument[]>, RecipeDocument, IndexQueryType>;
-export type GetRecipeHandler = RequestHandler<{ id: string }, ApiResponse<RecipeDocument>, unknown>;
-export type UpdateRecipeHandler = RequestHandler<{ id: string }, ApiResponse<RecipeDocument>, Partial<RecipeDocument>>;
-export type CreateRecipeHandler = RequestHandler<unknown, ApiResponse<RecipeDocument>, RecipeDocument>;
-export type DeleteRecipeHandler = RequestHandler<{ id: string }, ApiResponse<null>, unknown>;
+export type ListRecipeHandler = RequestHandler<ParamsDictionary, ApiResponse<RecipeDocument[]>, RecipeDocument, IndexQueryType>;
+export type GetRecipeHandler = RequestHandler<ParamsDictionary, ApiResponse<RecipeDocument>, RecipeDocument>;
+export type UpdateRecipeHandler = RequestHandler<ParamsDictionary, ApiResponse<RecipeDocument>, Partial<RecipeDocument>>;
+export type CreateRecipeHandler = RequestHandler<ParamsDictionary, ApiResponse<RecipeDocument>, RecipeDocument>;
+export type DeleteRecipeHandler = RequestHandler<ParamsDictionary, ApiResponse<null>, RecipeDocument>;

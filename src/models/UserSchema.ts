@@ -2,6 +2,7 @@ import { UserDocument } from "#types/models/User.js";
 import mongoose, { Model } from "mongoose";
 import argon2 from "argon2";
 import isEmail from "validator/lib/isEmail";
+import { Role } from "#types/enums/Role.js";
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
@@ -23,6 +24,11 @@ const userSchema = new mongoose.Schema<UserDocument>(
         validator: (value: string) => isEmail(value),
         message: "Please enter a valid email",
       },
+    },
+    role: {
+      type: String,
+      enum: Role,
+      default: Role.User,
     },
     password: {
       type: String,
@@ -80,6 +86,14 @@ userSchema.pre("save", async function (this: UserDocument, next) {
   this.passwordConfirmation = undefined;
   next();
 });
+
+// Instance method
+// This will verify that our password is the same as the input password
+// from the forms
+userSchema.methods.verifyPassword = async function (userHashedPassword: string, inputPassword: string): Promise<boolean> {
+  // this.password will not be available since we have select: false
+  return await argon2.verify(userHashedPassword, inputPassword);
+};
 
 // Middlewares are pre('<hook>', function()), post('<hook>', function(doc, next)),
 // save, init, validate, remove, updateOne, deleteOne are all hooks

@@ -5,7 +5,6 @@ import jwt, { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { User } from "#models/UserSchema.js";
 import { TokenPayload } from "#types/TokenPayload.js";
-import { Role } from "#types/enums/Role.js";
 
 dotenv.config();
 
@@ -32,7 +31,10 @@ export const isAuthenticated = async (req: Request, _res: Response, next: NextFu
 
   // validate token
   const decoded = jwt.verify(token, APP_SECRET) as TokenPayload;
-  const user = await User.findById(decoded.id);
+  const user = await User.findById(decoded.id).populate({
+    path: "ownedRecipes",
+    select: "name ingredients -owner ratings",
+  });
 
   // check if the user still exist, because sometimes the user might be
   // deleted for some reason and if you have the jwt yet, you can't use that
@@ -44,14 +46,6 @@ export const isAuthenticated = async (req: Request, _res: Response, next: NextFu
   // check if the user changed their password
   if (user.changedPasswordAfter(decoded.iat)) {
     next(new AppErrorClass("User recently changed password. Please login again.", 401));
-    return;
-  }
-
-  // Only allow admins and customers to access the other parts
-  // of crud. We can remove this, if all roles can access CRUD.
-  // and will create more granular changes on the authorization
-  if (user.role === Role.User) {
-    next(new AppErrorClass("Forbidden Access", 403));
     return;
   }
 

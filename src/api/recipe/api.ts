@@ -1,5 +1,5 @@
-import { Recipe } from "#models/RecipeSchema.js";
-import { IndexQueryType } from "#types/filters/RecipeFilters.js";
+import { Recipe } from "../../models/RecipeSchema";
+import { IndexQueryType } from "../../types/filters/RecipeFilters";
 import { fields } from "./fields";
 import { filter } from "./filters";
 import { pagination } from "./pagination";

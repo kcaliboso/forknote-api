@@ -1,4 +1,4 @@
-import { Role } from "#types/enums/Role.js";
+import { Role } from "../enums/Role";
 import { Document } from "mongoose";
 import { Recipe } from "./Recipe";
 

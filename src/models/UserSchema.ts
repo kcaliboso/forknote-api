@@ -1,8 +1,8 @@
-import { UserDocument } from "#types/models/User.js";
+import { UserDocument } from "../types/models/User";
 import mongoose, { Model } from "mongoose";
 import argon2 from "argon2";
 import isEmail from "validator/lib/isEmail";
-import { Role } from "#types/enums/Role.js";
+import { Role } from "../types/enums/Role";
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {

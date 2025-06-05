@@ -1,4 +1,4 @@
-import { RecipeDocument } from "#types/models/Recipe.js";
+import { RecipeDocument } from "../types/models/Recipe";
 import mongoose, { Model } from "mongoose";
 
 const recipeSchema = new mongoose.Schema<RecipeDocument>(

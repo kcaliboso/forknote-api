@@ -1,14 +1,12 @@
-import { User } from "#models/UserSchema.js";
-import { UserDocument } from "#types/models/User.js";
-import ApiResponse from "#types/responses/ApiResponse.js";
-import { catchAsync } from "#utils/catchAsync.js";
+import { User } from "../models/UserSchema";
+import { UserDocument } from "../types/models/User";
+import ApiResponse from "../types/responses/ApiResponse";
+import { catchAsync } from "../utils/catchAsync";
 import type { ParamsDictionary } from "express-serve-static-core";
 import { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
-import { AppErrorClass } from "#utils/appErrorClass.js";
-import { jwtSign } from "#utils/authHelpers.js";
-
-import type { Request, Response } from "express";
+import { AppErrorClass } from "../utils/appErrorClass";
+import { jwtSign } from "../utils/authHelpers";
 
 dotenv.config();
 
@@ -74,13 +72,3 @@ export const login = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Par
     data: user,
   });
 });
-
-export const getUserInfo = (req: Request, res: Response) => {
-  const { user } = req;
-
-  res.status(200).json({
-    status: "success",
-    message: "User Information",
-    data: user,
-  });
-};

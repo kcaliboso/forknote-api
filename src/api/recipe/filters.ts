@@ -1,5 +1,5 @@
-import { IndexQueryType, RatingFilter } from "#types/filters/RecipeFilters.js";
-import { RecipeDocument } from "#types/models/Recipe.js";
+import { IndexQueryType, RatingFilter } from "../../types/filters/RecipeFilters";
+import { RecipeDocument } from "../../types/models/Recipe";
 import { FilterQuery } from "mongoose";
 
 export const filter = (req: IndexQueryType) => {

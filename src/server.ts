@@ -5,13 +5,22 @@ import morgan from "morgan";
 import qs from "qs";
 
 import router from "./routes";
-import { routeNotFound } from "#middlewares/routeNotFound.js";
-import { globalErrorHandler } from "#middlewares/globalErrorHandler.js";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler";
+import path from "path";
+import { routeNotFound } from "./middlewares/routeNotFound";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT ?? "8000";
+
+// this will be the default, it needs to be the default
+// only use multer on routes that will accept files on it
+app.use(express.json());
+
+// this will tell expressjs that our path /uploads will be
+// a static folder
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.set("query parser", (str: string) => qs.parse(str));
 

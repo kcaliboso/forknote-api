@@ -1,5 +1,5 @@
-import { buildQuery } from "#api/recipe/api.js";
-import { Recipe } from "#models/RecipeSchema.js";
+import { buildQuery } from "../api/recipe/api";
+import { Recipe } from "../models/RecipeSchema";
 import {
   CreateRecipeHandler,
   DeleteRecipeHandler,
@@ -7,12 +7,14 @@ import {
   ListRecipeHandler,
   RecipeDocument,
   UpdateRecipeHandler,
-} from "#types/models/Recipe.js";
-import { UserDocument } from "#types/models/User.js";
-import ApiResponse from "#types/responses/ApiResponse.js";
-import { AppErrorClass } from "#utils/appErrorClass.js";
-import { catchAsync } from "#utils/catchAsync.js";
+} from "../types/models/Recipe";
+import { UserDocument } from "../types/models/User";
+import ApiResponse from "../types/responses/ApiResponse";
+import { AppErrorClass } from "../utils/appErrorClass";
+import { catchAsync } from "../utils/catchAsync";
 import type { Request, Response } from "express";
+
+import path from "path";
 
 import type { ParamsDictionary } from "express-serve-static-core";
 
@@ -174,11 +176,22 @@ export const show: GetRecipeHandler = catchAsync(async (req, res, next) => {
   });
 });
 
-export const store: CreateRecipeHandler = catchAsync(async (req, res, _next) => {
+export const store: CreateRecipeHandler = catchAsync(async (req, res, next) => {
+  if (!req.file) {
+    next(new AppErrorClass("Cover photos is required to create a recipe.", 422));
+    return;
+  }
+
+  // to get the extension
+  const ext = path.extname(req.file.originalname).toLowerCase();
+  // let's create a suffix
+  const uniqueSuffix = `${Date.now().toString()}-${Math.round(Math.random() * 1e6).toString()}`;
+
   const user = req.user as UserDocument;
 
   const recipe = await Recipe.create({
     ...req.body,
+    cover: `/uploads/cover-${uniqueSuffix}${ext}`,
     owner: user._id,
   });
 
@@ -191,6 +204,9 @@ export const store: CreateRecipeHandler = catchAsync(async (req, res, _next) => 
 
 export const update: UpdateRecipeHandler = catchAsync<ParamsDictionary, ApiResponse<RecipeDocument>, Partial<RecipeDocument>>(
   async (req, res, _next) => {
+    // TODO: Process the req.file (cover) if there is one,
+    // meaning they are changing the cover photo. and then
+    // apply it to the document
     const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,

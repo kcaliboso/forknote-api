@@ -1,4 +1,4 @@
-import { AppErrorClass } from "#utils/appErrorClass.js";
+import { AppErrorClass } from "../utils/appErrorClass";
 import type { NextFunction, Request, Response } from "express";
 
 export const routeNotFound = (req: Request, res: Response, next: NextFunction) => {

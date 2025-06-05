@@ -1,5 +1,5 @@
-import { IndexQueryType } from "#types/filters/RecipeFilters.js";
-import ApiResponse from "#types/responses/ApiResponse.js";
+import { IndexQueryType } from "../../types/filters/RecipeFilters";
+import ApiResponse from "../../types/responses/ApiResponse";
 import { RequestHandler } from "express";
 import { Document } from "mongoose";
 

@@ -1,7 +1,7 @@
-import { Recipe } from "#models/RecipeSchema.js";
-import { Role } from "#types/enums/Role.js";
-import { UserDocument } from "#types/models/User.js";
-import { AppErrorClass } from "#utils/appErrorClass.js";
+import { Recipe } from "../models/RecipeSchema";
+import { Role } from "../types/enums/Role";
+import { UserDocument } from "../types/models/User";
+import { AppErrorClass } from "../utils/appErrorClass";
 import type { Request, Response, NextFunction } from "express";
 
 // this could've been in the same file as isAuthenticated

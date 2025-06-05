@@ -1,5 +1,5 @@
-import { AppError } from "#types/AppError.js";
-import { ValidationError } from "#types/validations/ValidationError.js";
+import { AppError } from "../types/AppError";
+import { ValidationError } from "../types/validations/ValidationError";
 import type { Request, Response, NextFunction } from "express";
 
 const validationError = (error: AppError, res: Response) => {

@@ -1,9 +1,9 @@
 import type { RequestHandler } from "express";
 import type { ParamsDictionary } from "express-serve-static-core";
 
-import type { AsyncRequestHandler } from "#types/AsyncRequestHandler.js";
+import type { AsyncRequestHandler } from "../types/AsyncRequestHandler";
 import { ParsedQs } from "qs";
-import ApiResponse from "#types/responses/ApiResponse.js";
+import ApiResponse from "../types/responses/ApiResponse";
 
 export const catchAsync = <P = ParamsDictionary, ResBody = ApiResponse<unknown>, ReqBody = unknown, ReqQuery = ParsedQs>(
   fn: AsyncRequestHandler<P, ResBody, ReqBody, ReqQuery>,

@@ -1,4 +1,4 @@
-import { UserDocument } from "#types/models/User.js";
+import { UserDocument } from "../types/models/User";
 import jwt from "jsonwebtoken";
 
 /**

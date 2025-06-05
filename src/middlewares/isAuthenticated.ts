@@ -1,10 +1,10 @@
-import { AppErrorClass } from "#utils/appErrorClass.js";
+import { AppErrorClass } from "../utils/appErrorClass";
 import type { Request, Response, NextFunction } from "express";
 
 import jwt, { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
-import { User } from "#models/UserSchema.js";
-import { TokenPayload } from "#types/TokenPayload.js";
+import { User } from "../models/UserSchema";
+import { TokenPayload } from "../types/TokenPayload";
 
 dotenv.config();
 

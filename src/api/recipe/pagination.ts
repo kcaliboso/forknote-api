@@ -1,5 +1,5 @@
-import { Recipe } from "#models/RecipeSchema.js";
-import { IndexQueryType } from "#types/filters/RecipeFilters.js";
+import { Recipe } from "../../models/RecipeSchema";
+import { IndexQueryType } from "../../types/filters/RecipeFilters";
 
 export const pagination = async (req: IndexQueryType) => {
   const page = req.page ?? 1;

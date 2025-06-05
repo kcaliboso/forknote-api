@@ -1,5 +1,4 @@
-import { signup, login, getUserInfo } from "#controllers/authController.js";
-import { isAuthenticated } from "#middlewares/isAuthenticated.js";
+import { signup, login } from "../controllers/authController";
 import { Router } from "express";
 import multer from "multer";
 
@@ -9,6 +8,5 @@ const authRoutes = Router();
 
 authRoutes.post("/register", [upload.none()], signup);
 authRoutes.post("/login", [upload.none()], login);
-authRoutes.get("/user", [isAuthenticated], getUserInfo);
 
 export default authRoutes;

@@ -1,4 +1,4 @@
-import type { IndexQueryType } from "#types/filters/RecipeFilters.js";
+import type { IndexQueryType } from "../../types/filters/RecipeFilters";
 
 export const sort = (req: IndexQueryType) => {
   const { sort } = req;

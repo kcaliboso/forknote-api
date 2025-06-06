@@ -116,3 +116,37 @@ export const resetPassword = catchAsync<ParamsDictionary, ApiResponse<UserDocume
     });
   },
 );
+
+export const updatePassword = catchAsync<
+  ParamsDictionary,
+  ApiResponse<UserDocument>,
+  { currentPassword: string; password: string; passwordConfirmation: string }
+>(async (req, res, next) => {
+  const user = req.user as UserDocument;
+
+  const currentUser = await User.findById(user.id).select("+password");
+
+  if (!currentUser) {
+    next(new AppErrorClass("User cannot be found.", 400));
+    return;
+  }
+
+  const verifiedPassword = await user.verifyPassword(currentUser.password, req.body.currentPassword);
+
+  if (!verifiedPassword) {
+    next(new AppErrorClass("Password is incorrect. Please try again.", 400));
+    return;
+  }
+
+  currentUser.password = req.body.password;
+  currentUser.passwordConfirmation = req.body.passwordConfirmation;
+  await currentUser.save();
+
+  const token = jwtSign(user, APP_SECRET);
+
+  res.status(200).json({
+    status: "success",
+    token,
+    data: currentUser,
+  });
+});

@@ -4,7 +4,7 @@ import argon2 from "argon2";
 import isEmail from "validator/lib/isEmail";
 import { Role } from "../types/enums/Role";
 import crypto from "crypto";
-import { createHashResetToken } from "../utils/authHelpers";
+import { createHashedPassword, createHashResetToken } from "../utils/authHelpers";
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
@@ -109,7 +109,7 @@ userSchema.pre("save", async function (this: UserDocument, next) {
     return;
   }
 
-  this.password = await argon2.hash(this.password);
+  this.password = await createHashedPassword(this.password);
   this.passwordConfirmation = undefined;
   next();
 });

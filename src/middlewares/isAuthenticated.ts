@@ -5,6 +5,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { User } from "../models/UserSchema";
 import { TokenPayload } from "../types/TokenPayload";
+import { catchAsync } from "../utils/catchAsync";
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
 
 const APP_SECRET: Secret = process.env.APP_SECRET;
 
-export const isAuthenticated = async (req: Request, _res: Response, next: NextFunction) => {
+export const isAuthenticated = catchAsync(async (req: Request, _res: Response, next: NextFunction) => {
   // Check if the token is there and validate token
   const bearer = req.headers;
   let token;
@@ -31,6 +32,7 @@ export const isAuthenticated = async (req: Request, _res: Response, next: NextFu
 
   // validate token
   const decoded = jwt.verify(token, APP_SECRET) as TokenPayload;
+
   const user = await User.findById(decoded.id).populate({
     path: "ownedRecipes",
     select: "name ingredients -owner ratings",
@@ -52,4 +54,4 @@ export const isAuthenticated = async (req: Request, _res: Response, next: NextFu
   req.user = user;
 
   next();
-};
+});

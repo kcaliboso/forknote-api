@@ -32,6 +32,17 @@ const tokenError = (error: AppError, res: Response) => {
   });
 };
 
+const tokenExpired = (error: AppError, res: Response) => {
+  error.message = "Token has expired. Please try to log in again.";
+  error.status = error.status ?? "error";
+  error.statusCode = error.statusCode ?? 401;
+
+  res.status(error.statusCode).json({
+    status: error.status,
+    message: error.message,
+  });
+};
+
 export const globalErrorHandler = (error: AppError, _req: Request, res: Response, _next: NextFunction) => {
   if (error.name === "ValidationError") {
     validationError(error, res);
@@ -42,6 +53,12 @@ export const globalErrorHandler = (error: AppError, _req: Request, res: Response
     tokenError(error, res);
     return;
   }
+
+  if (error.name === "TokenExpiredError") {
+    tokenExpired(error, res);
+    return;
+  }
+
   error.statusCode = error.statusCode ?? 500;
   error.status = error.status ?? "error";
 

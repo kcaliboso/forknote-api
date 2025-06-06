@@ -58,9 +58,14 @@ export const login = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Par
     email,
   }).select("+password");
 
-  const verifiedPassword = await user?.verifyPassword(user.password, password);
+  if (!user) {
+    next(new AppErrorClass("Credentials do not match.", 401));
+    return;
+  }
 
-  if (!verifiedPassword || !user) {
+  const verifiedPassword = await user.verifyPassword(user.password, password);
+
+  if (!verifiedPassword) {
     next(new AppErrorClass("Credentials do not match.", 401));
     return;
   }

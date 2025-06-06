@@ -12,11 +12,14 @@ interface User {
   role: Role;
   passwordChangedAt?: Date;
   savedRecipes?: Recipe[];
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
 }
 
 interface UserMethods {
   verifyPassword(userHashedPassword: string, inputPassword: string): Promise<boolean>;
   changedPasswordAfter(tokenTimestamp: number): boolean;
+  createPasswordResetToken(): string;
 }
 
 export interface UserDocument extends User, Document, UserMethods {}

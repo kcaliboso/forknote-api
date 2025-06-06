@@ -3,6 +3,8 @@ import mongoose, { Model } from "mongoose";
 import argon2 from "argon2";
 import isEmail from "validator/lib/isEmail";
 import { Role } from "../types/enums/Role";
+import crypto from "crypto";
+import { createHashResetToken } from "../utils/authHelpers";
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
@@ -56,6 +58,8 @@ const userSchema = new mongoose.Schema<UserDocument>(
         ref: "Recipe",
       },
     ],
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   {
     timestamps: true,
@@ -110,6 +114,21 @@ userSchema.pre("save", async function (this: UserDocument, next) {
   next();
 });
 
+// Update the passwordChangedAt property of User
+userSchema.pre("save", function (this: UserDocument, next) {
+  // if the password of the user did not change
+  // or if the user is new. we don't do anything
+  if (!this.isModified("password") || this.isNew) {
+    next();
+  }
+
+  //else
+  // the - 1000 will ensure that the passwordChangedAt will
+  // be past the date we issued a new json token
+  this.passwordChangedAt = new Date(Date.now() - 1000);
+  next();
+});
+
 // Instance method
 // This will verify that our password is the same as the input password
 // from the forms
@@ -124,6 +143,19 @@ userSchema.methods.changedPasswordAfter = function (this: UserDocument, tokenTim
     return tokenTimestamp < convert;
   }
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function (this: UserDocument) {
+  // create a random hex string
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  // hash the random hex string
+  this.passwordResetToken = createHashResetToken(resetToken);
+
+  // creates 10 minutes of validity on the reset token
+  this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  return resetToken;
 };
 
 // Middlewares are pre('<hook>', function()), post('<hook>', function(doc, next)),

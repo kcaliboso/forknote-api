@@ -8,5 +8,6 @@
   "include": ["src/**/*"],
   "exclude": ["dist"],
   "esModuleInterop": true,
+  "skipLibCheck": true,
   "allowSyntheticDefaultImports": true,
 }

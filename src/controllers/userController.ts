@@ -41,8 +41,6 @@ export const forgotPassword = catchAsync<ParamsDictionary, ApiResponse<null>, { 
 
   const resetToken = user.createPasswordResetToken();
 
-  console.log(resetToken);
-
   // Save the user, since we ran user.createPasswordResetToken
   // inside that instance method we have assigned values for
   // passwordResetToken and passwordResetExpires.

@@ -21,7 +21,6 @@ export const isAuthorized = (...roles: Role[]) => {
     // in here, we only allow the update and delete of the recipe
     // if the owner is the same as the current logged in user
     if (id) {
-      console.log(id);
       const recipe = await Recipe.findById(id);
 
       // eslint-disable-next-line @typescript-eslint/no-base-to-string

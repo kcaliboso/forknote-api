@@ -6,6 +6,6 @@ const userRoutes = Router();
 
 userRoutes.get("/", [isAuthenticated], getUserInfo);
 userRoutes.post("/forgot-password", forgotPassword);
-userRoutes.get("/reset-password", [isAuthenticated], resetPassword);
+userRoutes.post("/reset-password/:token", resetPassword);
 
 export default userRoutes;

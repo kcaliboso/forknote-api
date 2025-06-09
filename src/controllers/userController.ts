@@ -26,7 +26,7 @@ export const getUserInfo = (req: Request, res: Response) => {
   });
 };
 
-export const forgotPassword = catchAsync<ParamsDictionary, ApiResponse<null>, { email: string; get: string }>(async (req, res, next) => {
+export const forgotPassword = catchAsync<null, ApiResponse<null>, { email: string; get: string }>(async (req, res, next) => {
   const { email } = req.body;
 
   // 1. Get user based on posted email
@@ -168,5 +168,19 @@ export const updateUser = catchAsync<ParamsDictionary, ApiResponse<UserDocument>
     status: "success",
     message: "User Information Updated",
     data: updatedUser,
+  });
+});
+
+export const deleteCurrentUser = catchAsync<ParamsDictionary, ApiResponse<null>, null>(async (req, res, _next) => {
+  const user = req.user as UserDocument;
+
+  await User.findByIdAndUpdate(user.id, {
+    active: false,
+  });
+
+  res.status(204).json({
+    status: "success",
+    message: "User Account Deleted",
+    data: null,
   });
 });

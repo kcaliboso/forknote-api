@@ -14,6 +14,7 @@ interface User {
   savedRecipes?: Recipe[];
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  active: boolean;
 }
 
 interface UserMethods {

@@ -1,5 +1,5 @@
 import { UserDocument } from "../types/models/User";
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model, Query } from "mongoose";
 import argon2 from "argon2";
 import isEmail from "validator/lib/isEmail";
 import { Role } from "../types/enums/Role";
@@ -60,6 +60,11 @@ const userSchema = new mongoose.Schema<UserDocument>(
     ],
     passwordResetToken: String,
     passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
   },
   {
     timestamps: true,
@@ -126,6 +131,14 @@ userSchema.pre("save", function (this: UserDocument, next) {
   // the - 1000 will ensure that the passwordChangedAt will
   // be past the date we issued a new json token
   this.passwordChangedAt = new Date(Date.now() - 1000);
+  next();
+});
+
+// remove users that are inactive
+userSchema.pre<Query<UserDocument, UserDocument>>(/^find/, function (next) {
+  this.find({
+    active: true,
+  });
   next();
 });
 

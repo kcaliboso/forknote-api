@@ -1,4 +1,3 @@
-import { Secret } from "jsonwebtoken";
 import { sendMail } from "../config/email";
 import { User } from "../models/UserSchema";
 import ApiResponse from "../types/responses/ApiResponse";
@@ -9,12 +8,6 @@ import type { ParamsDictionary } from "express-serve-static-core";
 import { createHashResetToken, jwtSign } from "../utils/authHelpers";
 import { UserDocument } from "../types/models/User";
 import { filterReqBody } from "../utils/filterReqBody";
-
-if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
-  throw new AppErrorClass("APP_SECRET or APP_JWT_EXPIRES_IN is not set.");
-}
-
-const APP_SECRET: Secret = process.env.APP_SECRET;
 
 export const getUserInfo = (req: Request, res: Response) => {
   const { user } = req;
@@ -108,7 +101,7 @@ export const resetPassword = catchAsync<ParamsDictionary, ApiResponse<UserDocume
     // we are going to use pre save hook on userSchema
 
     // 4. Log the user in, send Jwt
-    const token = jwtSign(user, APP_SECRET);
+    const token = jwtSign(user);
 
     res.status(200).json({
       status: "success",
@@ -143,7 +136,7 @@ export const updatePassword = catchAsync<
   currentUser.passwordConfirmation = req.body.passwordConfirmation;
   await currentUser.save();
 
-  const token = jwtSign(user, APP_SECRET);
+  const token = jwtSign(user);
 
   res.status(200).json({
     status: "success",

@@ -10,4 +10,5 @@ userRoutes.post("/reset-password/:token", resetPassword);
 userRoutes.post("/update-password", [isAuthenticated], updatePassword);
 userRoutes.patch("/", [isAuthenticated], updateUser);
 userRoutes.delete("/delete", [isAuthenticated], deleteCurrentUser);
+
 export default userRoutes;

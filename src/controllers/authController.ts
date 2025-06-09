@@ -3,18 +3,20 @@ import { UserDocument } from "../types/models/User";
 import ApiResponse from "../types/responses/ApiResponse";
 import { catchAsync } from "../utils/catchAsync";
 import type { ParamsDictionary } from "express-serve-static-core";
-import { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { AppErrorClass } from "../utils/appErrorClass";
 import { jwtSign } from "../utils/authHelpers";
 
+import type { Response } from "express";
+
 dotenv.config();
+
+const rawCookieExpiresIn = process.env.APP_COOKIE_EXPIRES_IN as number | undefined;
+const cookieExpiresIn = rawCookieExpiresIn ?? 1;
 
 if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
   throw new AppErrorClass("APP_SECRET or APP_JWT_EXPIRES_IN is not set.");
 }
-
-const APP_SECRET: Secret = process.env.APP_SECRET;
 
 export const signup = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Partial<UserDocument>>(async (req, res, _next) => {
   const { firstName, lastName, email, password, passwordConfirmation } = req.body;
@@ -31,13 +33,7 @@ export const signup = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Pa
     throw new AppErrorClass("APP_SECRET environment variable is not set.");
   }
 
-  const token = jwtSign(newUser, APP_SECRET);
-
-  res.status(201).json({
-    status: "success",
-    token,
-    data: newUser,
-  });
+  createSendToken(newUser, res);
 });
 
 export const login = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Partial<UserDocument>>(async (req, res, next) => {
@@ -69,11 +65,24 @@ export const login = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Par
     next(new AppErrorClass("Credentials do not match.", 401));
     return;
   }
-  const token = jwtSign(user, APP_SECRET);
+  createSendToken(user, res);
+});
+
+export const createSendToken = (user: UserDocument, res: Response) => {
+  const token = jwtSign(user);
+  const cookieOptions = {
+    expires: new Date(Date.now() + cookieExpiresIn * 24 * 60 * 60 * 1000),
+    secure: false, // 'true' only works on https
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  res.cookie("jwt", token, cookieOptions);
 
   res.status(200).json({
     status: "success",
     token,
     data: user,
   });
-});
+};

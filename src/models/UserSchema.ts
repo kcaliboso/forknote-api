@@ -72,6 +72,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
       virtuals: true,
       transform(doc, ret) {
         delete ret._id;
+        delete ret.password;
         return ret;
       },
     },
@@ -79,6 +80,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
       virtuals: true,
       transform(doc, ret) {
         delete ret._id;
+        delete ret.password;
         return ret;
       },
     },

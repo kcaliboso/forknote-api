@@ -1,7 +1,19 @@
 import { UserDocument } from "../types/models/User";
-import jwt from "jsonwebtoken";
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
 import argon2 from "argon2";
 import crypto from "crypto";
+import dotenv from "dotenv";
+import { AppErrorClass } from "./appErrorClass";
+
+dotenv.config();
+
+if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
+  throw new AppErrorClass("APP_SECRET or APP_JWT_EXPIRES_IN is not set.");
+}
+
+const appSecret: Secret = process.env.APP_SECRET;
+const rawExpiresIn = process.env.APP_JWT_EXPIRES_IN as string | undefined;
+const expiresIn = rawExpiresIn ?? "1d";
 
 /**
  * Signs and creates the jwt
@@ -9,16 +21,16 @@ import crypto from "crypto";
  * @param secretSalt string
  * @returns string
  */
-export const jwtSign = (user: UserDocument, secretSalt: string): string => {
+export const jwtSign = (user: UserDocument): string => {
   return jwt.sign(
     {
       id: user._id,
       role: user.role,
     },
-    secretSalt,
+    appSecret,
     {
-      expiresIn: "1d",
-    },
+      expiresIn,
+    } as SignOptions,
   );
 };
 

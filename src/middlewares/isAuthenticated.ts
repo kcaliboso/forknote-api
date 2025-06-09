@@ -51,6 +51,12 @@ export const isAuthenticated = catchAsync(async (req: Request, _res: Response, n
     return;
   }
 
+  // is user is not active anymore
+  if (!user.active) {
+    next(new AppErrorClass("User account is deleted", 404));
+    return;
+  }
+
   req.user = user;
 
   next();

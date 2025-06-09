@@ -33,7 +33,7 @@ export const isAuthenticated = catchAsync(async (req: Request, _res: Response, n
   // validate token
   const decoded = jwt.verify(token, APP_SECRET) as TokenPayload;
 
-  const user = await User.findById(decoded.id).populate({
+  const user = await User.findById(decoded.id).select("+active").populate({
     path: "ownedRecipes",
     select: "name ingredients -owner ratings",
   });

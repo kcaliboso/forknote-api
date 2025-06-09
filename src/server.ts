@@ -8,6 +8,7 @@ import router from "./routes";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import path from "path";
 import { routeNotFound } from "./middlewares/routeNotFound";
+import { limiter } from "./config/rateLimiter";
 
 dotenv.config();
 
@@ -39,6 +40,8 @@ mongoose
 
 app.use(morgan("dev"));
 
+// use the limiter
+app.use(limiter);
 app.use(router);
 
 // Handle routes that are not declared

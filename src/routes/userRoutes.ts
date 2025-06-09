@@ -1,4 +1,4 @@
-import { forgotPassword, getUserInfo, resetPassword, updatePassword } from "../controllers/userController";
+import { forgotPassword, getUserInfo, resetPassword, updatePassword, updateUser } from "../controllers/userController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { Router } from "express";
 
@@ -8,5 +8,5 @@ userRoutes.get("/", [isAuthenticated], getUserInfo);
 userRoutes.post("/forgot-password", forgotPassword);
 userRoutes.post("/reset-password/:token", resetPassword);
 userRoutes.post("/update-password", [isAuthenticated], updatePassword);
-
+userRoutes.patch("/", [isAuthenticated], updateUser);
 export default userRoutes;

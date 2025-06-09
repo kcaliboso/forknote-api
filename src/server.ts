@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import qs from "qs";
@@ -10,6 +10,7 @@ import path from "path";
 import { routeNotFound } from "./middlewares/routeNotFound";
 import { limiter } from "./config/rateLimiter";
 import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
 dotenv.config();
 
@@ -22,6 +23,18 @@ app.use(helmet());
 // this will be the default, it needs to be the default
 // only use multer on routes that will accept files on it
 app.use(express.json());
+
+// !!!!!! important
+// data sanitization nosql query injection
+//
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  if (req.body) {
+    req.body = mongoSanitize.sanitize<Record<string, unknown>>(req.body as Record<string, unknown>);
+  }
+  req.params = mongoSanitize.sanitize(req.params);
+  // deliberately skip req.query because it's read-only
+  next();
+});
 
 // this will tell expressjs that our path /uploads will be
 // a static folder

@@ -8,6 +8,7 @@ import type { Request, Response } from "express";
 import type { ParamsDictionary } from "express-serve-static-core";
 import { createHashResetToken, jwtSign } from "../utils/authHelpers";
 import { UserDocument } from "../types/models/User";
+import { filterReqBody } from "../utils/filterReqBody";
 
 if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
   throw new AppErrorClass("APP_SECRET or APP_JWT_EXPIRES_IN is not set.");
@@ -148,5 +149,24 @@ export const updatePassword = catchAsync<
     status: "success",
     token,
     data: currentUser,
+  });
+});
+
+export const updateUser = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Partial<UserDocument>>(async (req, res, _next) => {
+  const user = req.user as UserDocument;
+
+  // 1. filter and only get the fields that we can update
+  const filteredReq = filterReqBody(req.body, ["firstName", "lastName"]);
+
+  // 2. update user document
+  const updatedUser = await User.findByIdAndUpdate(user.id, filteredReq, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "User Information Updated",
+    data: updatedUser,
   });
 });

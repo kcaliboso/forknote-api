@@ -9,11 +9,15 @@ import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import path from "path";
 import { routeNotFound } from "./middlewares/routeNotFound";
 import { limiter } from "./config/rateLimiter";
+import helmet from "helmet";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT ?? "8000";
+
+// use the middleware for security http headers
+app.use(helmet());
 
 // this will be the default, it needs to be the default
 // only use multer on routes that will accept files on it

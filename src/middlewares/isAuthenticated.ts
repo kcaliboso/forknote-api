@@ -33,10 +33,26 @@ export const isAuthenticated = catchAsync(async (req: Request, _res: Response, n
   // validate token
   const decoded = jwt.verify(token, APP_SECRET) as TokenPayload;
 
-  const user = await User.findById(decoded.id).select("+active").populate({
-    path: "ownedRecipes",
-    select: "name ingredients -owner ratings",
-  });
+  const user = await User.findById(decoded.id)
+    .select("+active")
+    .populate([
+      {
+        path: "ownedRecipes",
+        select: "name ingredients -owner ratings",
+      },
+      {
+        path: "savedRecipes",
+        select: "name ingredients ratings",
+        populate: {
+          path: "owner",
+          select: "name id email avatar",
+        },
+      },
+      {
+        path: "reviews",
+        select: "text rating createdAt id",
+      },
+    ]);
 
   // check if the user still exist, because sometimes the user might be
   // deleted for some reason and if you have the jwt yet, you can't use that

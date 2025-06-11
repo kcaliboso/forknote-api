@@ -8,6 +8,7 @@ import type { ParamsDictionary } from "express-serve-static-core";
 import { createHashResetToken, jwtSign } from "../utils/authHelpers";
 import { UserDocument } from "../types/models/User";
 import { filterReqBody } from "../utils/filterReqBody";
+import { createFilename } from "../utils/createFilename";
 
 export const getUserInfo = (req: Request, res: Response) => {
   const { user } = req;
@@ -149,13 +150,20 @@ export const updateUser = catchAsync<ParamsDictionary, ApiResponse<UserDocument>
   const user = req.user as UserDocument;
 
   // 1. filter and only get the fields that we can update
-  const filteredReq = filterReqBody(req.body, ["firstName", "lastName"]);
+  const filteredReq = filterReqBody(req.body, ["firstName", "lastName", "avatar"]);
 
   // 2. update user document
-  const updatedUser = await User.findByIdAndUpdate(user.id, filteredReq, {
-    new: true,
-    runValidators: true,
-  });
+  const updatedUser = await User.findByIdAndUpdate(
+    user.id,
+    {
+      ...filteredReq,
+      avatar: createFilename(req),
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
   res.status(200).json({
     status: "success",

@@ -15,7 +15,6 @@ import { catchAsync } from "../utils/catchAsync";
 import type { Request, Response } from "express";
 
 import type { ParamsDictionary } from "express-serve-static-core";
-import { createFilename } from "../utils/createFilename";
 
 // Aggregation Pipeline (match and group) for Mongoose/MongoDB, can  be used for dashboard statistics
 export const getRecipeStats = async (req: Request, res: Response) => {
@@ -195,7 +194,6 @@ export const store: CreateRecipeHandler = catchAsync(async (req, res, next) => {
   const recipe = await Recipe.create({
     ...req.body,
     owner: user._id,
-    cover: createFilename(req),
   });
 
   res.status(200).json({
@@ -211,7 +209,6 @@ export const update: UpdateRecipeHandler = catchAsync<ParamsDictionary, ApiRespo
       req.params.id,
       {
         ...req.body,
-        cover: createFilename(req),
       },
       {
         new: true,

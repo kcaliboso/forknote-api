@@ -207,13 +207,17 @@ export const store: CreateRecipeHandler = catchAsync(async (req, res, next) => {
 
 export const update: UpdateRecipeHandler = catchAsync<ParamsDictionary, ApiResponse<RecipeDocument>, Partial<RecipeDocument>>(
   async (req, res, _next) => {
-    // TODO: Process the req.file (cover) if there is one,
-    // meaning they are changing the cover photo. and then
-    // apply it to the document
-    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const recipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        cover: createFilename(req),
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
 
     res.status(200).json({
       data: recipe,

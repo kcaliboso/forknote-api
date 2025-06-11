@@ -162,7 +162,10 @@ export const index: ListRecipeHandler = catchAsync(async (req, res, _next) => {
 });
 
 export const show: GetRecipeHandler = catchAsync(async (req, res, next) => {
-  const recipe = await Recipe.findById(req.params.id);
+  const recipe = await Recipe.findById(req.params.id).populate({
+    path: "owner",
+    select: "-__v -passwordChangedAt -createdAt -updatedAt -savedRecipes -role",
+  });
 
   if (!recipe) {
     next(new AppErrorClass("Recipe not found", 404));

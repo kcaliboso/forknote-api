@@ -6,6 +6,7 @@ export interface RatingFilter {
 interface IndexFilterType {
   name?: string;
   ratings?: RatingFilter;
+  // add more here if needed
 }
 
 export interface ShowFilterType {
@@ -20,6 +21,7 @@ export interface IndexQueryType {
   fields?: string;
   page?: number; // this is the .skip() on mongoose
   limit?: number;
+  populate?: string[];
 }
 
 // .skip() means, if we have 30 items in our database

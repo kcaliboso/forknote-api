@@ -68,6 +68,10 @@ recipeSchema.virtual("reviews", {
 });
 
 recipeSchema.virtual("overallRating").get(function () {
+  if (!this.reviews) {
+    return 0;
+  }
+
   const count = this.reviews.length;
   const sum = this.reviews.reduce<number>((sum: number, review: ReviewDocument) => {
     return sum + review.rating;

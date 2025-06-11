@@ -38,7 +38,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 // this will tell expressjs that our path /uploads will be
 // a static folder
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
 
 app.set("query parser", (str: string) => qs.parse(str));
 

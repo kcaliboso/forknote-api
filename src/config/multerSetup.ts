@@ -13,12 +13,12 @@ const imageFileFilter = (_req: Request, file: Express.Multer.File, callback: Fil
 };
 
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../../uploads"),
+  destination: path.join(__dirname, "../uploads"),
   filename: (_req: Request, file: Express.Multer.File, callback) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    const base = path.basename(file.originalname, ext);
     const uniqueSuffix = `${Date.now().toString()}-${Math.round(Math.random() * 1e6).toString()}`;
-    const finalName = `${base}-${uniqueSuffix}${ext}`;
+    const finalName = `file-${uniqueSuffix}${ext}`;
+
     callback(null, finalName);
   },
 });

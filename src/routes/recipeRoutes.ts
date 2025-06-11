@@ -5,7 +5,7 @@ import { Role } from "../types/enums/Role";
 import { Router } from "express";
 import { upload } from "../config/multerSetup";
 import reviewRoutes from "./reviewRoutes";
-import { resizePhotos } from "../middlewares/resizePhotos";
+import { resizeRecipeImages } from "../middlewares/resizeRecipeImages";
 
 const recipeRoutes = Router();
 
@@ -25,12 +25,34 @@ recipeRoutes.route("/ingredients/:ingredient").get(getIngredient);
 recipeRoutes
   .route("/")
   .get(index)
-  .post([upload.single("cover"), resizePhotos, isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], store);
+  .post(
+    [
+      upload.fields([
+        { name: "cover", maxCount: 1 },
+        { name: "images", maxCount: 5 },
+      ]),
+      resizeRecipeImages,
+      isAuthenticated,
+      isAuthorized(Role.Admin, Role.Customer),
+    ],
+    store,
+  );
 
 recipeRoutes
   .route("/:id")
   .get(show)
-  .patch([upload.single("cover"), resizePhotos, isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], update)
+  .patch(
+    [
+      upload.fields([
+        { name: "cover", maxCount: 1 },
+        { name: "images", maxCount: 5 },
+      ]),
+      resizeRecipeImages,
+      isAuthenticated,
+      isAuthorized(Role.Admin, Role.Customer),
+    ],
+    update,
+  )
   .delete([isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], destroy);
 
 recipeRoutes.use("/:recipeId/reviews", reviewRoutes);

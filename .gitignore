@@ -3,5 +3,5 @@ node_modules
 .vscode
 dist
 .DS_Store
-uploads/*
-!uploads/.gitkeep
+src/uploads/*
+!src/uploads/*uploads/.gitkeep

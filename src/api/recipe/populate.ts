@@ -12,5 +12,6 @@ export const populate = (req: IndexQueryType) => {
       path: item,
       select: populateSelectOptions[item],
     }));
+
   return populateObj;
 };

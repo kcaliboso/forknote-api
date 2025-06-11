@@ -1,7 +1,11 @@
-import type { Request, Response, NextFunction } from "express";
 import sharp from "sharp";
+import { catchAsync } from "../utils/catchAsync";
 
-export const resizePhoto = async (req: Request, res: Response, next: NextFunction) => {
+import type { ParamsDictionary } from "express-serve-static-core";
+import ApiResponse from "../types/responses/ApiResponse";
+import { UserDocument } from "../types/models/User";
+
+export const resizePhoto = catchAsync<ParamsDictionary, ApiResponse<null>, UserDocument>(async (req, _res, next) => {
   if (!req.file) {
     next();
     return;
@@ -11,6 +15,7 @@ export const resizePhoto = async (req: Request, res: Response, next: NextFunctio
   const finalName = `user-${uniqueSuffix}.jpeg`;
 
   req.file.filename = finalName;
+  req.body.avatar = finalName;
 
   // toFormat will format whatever your image to jpeg
   // jpeg() with quality option will make your photo
@@ -24,4 +29,4 @@ export const resizePhoto = async (req: Request, res: Response, next: NextFunctio
     .toFile(`${__dirname}/../uploads/images/user/${req.file.filename}`);
 
   next();
-};
+});

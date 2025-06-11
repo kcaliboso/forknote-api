@@ -1,5 +1,6 @@
 import { RecipeDocument } from "../types/models/Recipe";
 import mongoose, { Model } from "mongoose";
+import { ReviewDocument } from "../types/models/Review";
 
 const recipeSchema = new mongoose.Schema<RecipeDocument>(
   {
@@ -16,10 +17,6 @@ const recipeSchema = new mongoose.Schema<RecipeDocument>(
         message: "A recipe must have ingredients",
       },
     },
-    ratings: {
-      type: Number,
-      default: 0,
-    },
     images: {
       type: [String],
     },
@@ -31,24 +28,20 @@ const recipeSchema = new mongoose.Schema<RecipeDocument>(
       ref: "User",
       required: [true, "A recipe must have an owner"],
     },
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
   },
   {
     timestamps: true,
     // outputted as json and object, we will append the virtual properties
     toJSON: {
       virtuals: true,
-      transform(doc, ret) {
+      transform(_doc, ret) {
         delete ret._id;
         return ret;
       },
     },
     toObject: {
       virtuals: true,
-      transform(doc, ret) {
+      transform(_doc, ret) {
         delete ret._id;
         return ret;
       },
@@ -60,6 +53,21 @@ recipeSchema.virtual("savedByUsers", {
   ref: "User",
   localField: "_id",
   foreignField: "savedRecipes",
+});
+
+recipeSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "recipe",
+});
+
+recipeSchema.virtual("overallRating").get(function () {
+  const count = this.reviews.length;
+  const sum = this.reviews.reduce<number>((sum: number, review: ReviewDocument) => {
+    return sum + review.rating;
+  }, 0);
+
+  return sum / count;
 });
 
 // Query Middleware Practice

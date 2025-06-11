@@ -5,16 +5,17 @@ import { Document } from "mongoose";
 
 import type { ParamsDictionary } from "express-serve-static-core";
 import { UserDocument } from "./User";
+import { ReviewDocument } from "./Review";
 
 export interface Recipe {
   name: string;
   ingredients: string[];
-  ratings?: number;
   likes?: number;
   images?: string[];
   cover?: string;
   createdAt: Date;
   owner: UserDocument;
+  reviews: ReviewDocument[];
 }
 
 export interface RecipeDocument extends Recipe, Document {}

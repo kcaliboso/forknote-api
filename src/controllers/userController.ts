@@ -8,7 +8,6 @@ import type { ParamsDictionary } from "express-serve-static-core";
 import { createHashResetToken, jwtSign } from "../utils/authHelpers";
 import { UserDocument } from "../types/models/User";
 import { filterReqBody } from "../utils/filterReqBody";
-import { createFilename } from "../utils/createFilename";
 
 export const getUserInfo = (req: Request, res: Response) => {
   const { user } = req;
@@ -157,7 +156,6 @@ export const updateUser = catchAsync<ParamsDictionary, ApiResponse<UserDocument>
     user.id,
     {
       ...filteredReq,
-      avatar: createFilename(req),
     },
     {
       new: true,

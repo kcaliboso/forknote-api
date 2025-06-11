@@ -14,9 +14,8 @@ import { AppErrorClass } from "../utils/appErrorClass";
 import { catchAsync } from "../utils/catchAsync";
 import type { Request, Response } from "express";
 
-import path from "path";
-
 import type { ParamsDictionary } from "express-serve-static-core";
+import { createFilename } from "../utils/createFilename";
 
 // Aggregation Pipeline (match and group) for Mongoose/MongoDB, can  be used for dashboard statistics
 export const getRecipeStats = async (req: Request, res: Response) => {
@@ -191,17 +190,12 @@ export const store: CreateRecipeHandler = catchAsync(async (req, res, next) => {
     return;
   }
 
-  // to get the extension
-  const ext = path.extname(req.file.originalname).toLowerCase();
-  // let's create a suffix
-  const uniqueSuffix = `${Date.now().toString()}-${Math.round(Math.random() * 1e6).toString()}`;
-
   const user = req.user as UserDocument;
 
   const recipe = await Recipe.create({
     ...req.body,
-    cover: `/uploads/cover-${uniqueSuffix}${ext}`,
     owner: user._id,
+    cover: createFilename(req),
   });
 
   res.status(200).json({

@@ -70,7 +70,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
     timestamps: true,
     toJSON: {
       virtuals: true,
-      transform(doc, ret) {
+      transform(_doc, ret) {
         delete ret._id;
         delete ret.password;
         return ret;
@@ -78,7 +78,7 @@ const userSchema = new mongoose.Schema<UserDocument>(
     },
     toObject: {
       virtuals: true,
-      transform(doc, ret) {
+      transform(_doc, ret) {
         delete ret._id;
         delete ret.password;
         return ret;
@@ -101,6 +101,12 @@ userSchema.virtual("ownedRecipes", {
   ref: "Recipe",
   localField: "_id",
   foreignField: "owner",
+});
+
+userSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "user",
 });
 
 // Document Middleware for MongoDB

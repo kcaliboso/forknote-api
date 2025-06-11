@@ -15,7 +15,7 @@ export interface Recipe {
   cover?: string;
   createdAt: Date;
   owner: UserDocument;
-  reviews: ReviewDocument[];
+  reviews?: ReviewDocument[];
 }
 
 export interface RecipeDocument extends Recipe, Document {}

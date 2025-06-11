@@ -1,14 +1,14 @@
 import type { Request, Response, NextFunction } from "express";
 import sharp from "sharp";
 
-export const resizePhotos = async (req: Request, res: Response, next: NextFunction) => {
+export const resizePhoto = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.file) {
     next();
     return;
   }
 
   const uniqueSuffix = `${Date.now().toString()}-${Math.round(Math.random() * 1e6).toString()}`;
-  const finalName = `file-${uniqueSuffix}.jpeg`;
+  const finalName = `user-${uniqueSuffix}.jpeg`;
 
   req.file.filename = finalName;
 
@@ -21,7 +21,7 @@ export const resizePhotos = async (req: Request, res: Response, next: NextFuncti
     .jpeg({
       quality: 80,
     })
-    .toFile(`${__dirname}/../uploads/${req.file.filename}`);
+    .toFile(`${__dirname}/../uploads/images/user/${req.file.filename}`);
 
   next();
 };

@@ -4,6 +4,7 @@ import { isAuthorized } from "../middlewares/isAuthorized";
 import { Role } from "../types/enums/Role";
 import { Router } from "express";
 import { upload } from "../config/multerSetup";
+import reviewRoutes from "./reviewRoutes";
 
 const recipeRoutes = Router();
 
@@ -31,10 +32,18 @@ recipeRoutes
   .patch([upload.single("cover"), isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], update)
   .delete([isAuthenticated, isAuthorized(Role.Admin, Role.Customer)], destroy);
 
+recipeRoutes.use("/:recipeId/reviews", reviewRoutes);
+
 export default recipeRoutes;
 
-/**
- * TODOs:
- * 1) Validators for request on post, patch and also
- * 2) Auth for post, patch and delete
- */
+// example for nested route
+// ! You can also just import the reviewRoutes here and do:
+// recipeRoutes.use("/:id/reviews", reviewRoutes)
+// ! and inside reviewRoutes on the Router(), we do Router({mergeParams: true})
+// recipeRoutes.route("/:id/reviews").post(reviewController.store).get("/:id", reviewController.show);
+
+// NOTES
+// Nested routes works just like Laravel
+// /<parent>/<parent_id>/<child_handler>
+// example: /tour/1234/reviews POST (will create reviews on tour)
+// /tour/1234/reviews/4321 GET (will get the review 4321 on tour 123)

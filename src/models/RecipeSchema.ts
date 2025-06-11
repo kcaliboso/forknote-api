@@ -49,6 +49,12 @@ const recipeSchema = new mongoose.Schema<RecipeDocument>(
   },
 );
 
+// adding indexes
+// 1 means apply and -1 means remove
+recipeSchema.index({
+  overallRating: 1,
+});
+
 recipeSchema.virtual("savedByUsers", {
   ref: "User",
   localField: "_id",

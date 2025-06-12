@@ -6,5 +6,8 @@
     "strict": true
   },
   "include": ["src/**/*"],
-  "exclude": ["dist"]
+  "exclude": ["dist"],
+  "esModuleInterop": true,
+  "skipLibCheck": true,
+  "allowSyntheticDefaultImports": true,
 }

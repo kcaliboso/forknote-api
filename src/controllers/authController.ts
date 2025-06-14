@@ -70,9 +70,8 @@ export const login = catchAsync<ParamsDictionary, ApiResponse<UserDocument>, Par
 
 export const createSendToken = (user: UserDocument, res: Response) => {
   const token = jwtSign(user);
-  const cookieOptions = {
+  const cookieOptions: { expires: Date; httpOnly: boolean; secure?: boolean } = {
     expires: new Date(Date.now() + cookieExpiresIn * 24 * 60 * 60 * 1000),
-    secure: false, // 'true' only works on https
     httpOnly: true,
   };
 

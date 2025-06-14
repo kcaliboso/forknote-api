@@ -1,5 +1,5 @@
 import { AppErrorClass } from "../utils/appErrorClass";
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express-serve-static-core";
 
 import jwt, { Secret } from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -15,7 +15,13 @@ if (!process.env.APP_SECRET || !process.env.APP_JWT_EXPIRES_IN) {
 
 const APP_SECRET: Secret = process.env.APP_SECRET;
 
-export const isAuthenticated = catchAsync(async (req: Request, _res: Response, next: NextFunction) => {
+interface CookieRequest extends Request {
+  cookies: {
+    jwt?: string;
+  };
+}
+
+export const isAuthenticated = catchAsync(async (req: CookieRequest, _res: Response, next: NextFunction) => {
   // Check if the token is there and validate token
   const bearer = req.headers;
   let token;
@@ -23,6 +29,10 @@ export const isAuthenticated = catchAsync(async (req: Request, _res: Response, n
   // check if there is a Bearer
   if (bearer.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization?.split(" ")[1];
+  }
+
+  if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {

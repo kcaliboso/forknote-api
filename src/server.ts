@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, RequestHandler, Response } from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import qs from "qs";
+import cookieParser from "cookie-parser";
 
 import router from "./routes";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
@@ -11,11 +12,33 @@ import { routeNotFound } from "./middlewares/routeNotFound";
 import { limiter } from "./config/rateLimiter";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
+import cors, { CorsOptions } from "cors";
+import { AppErrorClass } from "./utils/appErrorClass";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT ?? "8000";
+
+const allowedOrigins = [process.env.FRONTEND_URL];
+const corsOptions: CorsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new AppErrorClass(`CORS policy: origin ${origin} is not allowed`, 500));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
 
 // use the middleware for security http headers
 app.use(helmet());
@@ -23,6 +46,7 @@ app.use(helmet());
 // this will be the default, it needs to be the default
 // only use multer on routes that will accept files on it
 app.use(express.json());
+app.use(cookieParser());
 
 // !!!!!! important
 // data sanitization nosql query injection

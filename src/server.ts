@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import express, { NextFunction, Request, RequestHandler, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import qs from "qs";
@@ -41,7 +41,17 @@ const corsOptions: CorsOptions = {
 app.use(cors(corsOptions));
 
 // use the middleware for security http headers
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "http://localhost:8000"],
+      },
+    },
+  }),
+);
 
 // this will be the default, it needs to be the default
 // only use multer on routes that will accept files on it
@@ -82,7 +92,7 @@ mongoose
 app.use(morgan("dev"));
 
 // use the limiter
-app.use(limiter);
+app.use(limiter); // disable for now
 app.use(router);
 
 // Handle routes that are not declared

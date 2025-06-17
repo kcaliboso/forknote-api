@@ -148,14 +148,19 @@ export const getIngredient = async (req: Request, res: Response) => {
 };
 
 export const index: ListRecipeHandler = catchAsync(async (req, res, _next) => {
-  const query = buildQuery(req.query);
-  const recipes = await query;
+  const results = await buildQuery(req.query);
 
   res.status(200).json({
     message: "Recipe List",
     status: "success",
-    results: recipes.length,
-    data: recipes,
+    data: results.docs,
+    meta: {
+      totalDocs: results.totalDocs,
+      limit: results.limit,
+      page: results.page ?? 1,
+      totalPages: results.totalPages,
+      pagingCounter: results.pagingCounter,
+    },
   });
 });
 

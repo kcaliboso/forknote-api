@@ -2,12 +2,10 @@ import { User } from "../models/UserSchema";
 import { UserDocument } from "../types/models/User";
 import ApiResponse from "../types/responses/ApiResponse";
 import { catchAsync } from "../utils/catchAsync";
-import type { ParamsDictionary } from "express-serve-static-core";
+import type { ParamsDictionary, Response, Request } from "express-serve-static-core";
 import dotenv from "dotenv";
 import { AppErrorClass } from "../utils/appErrorClass";
 import { jwtSign } from "../utils/authHelpers";
-
-import type { Response } from "express";
 
 dotenv.config();
 
@@ -84,4 +82,13 @@ export const createSendToken = (user: UserDocument, res: Response) => {
     token,
     data: user,
   });
+};
+
+export const logout = (_req: Request, res: Response) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({ status: "success" });
 };

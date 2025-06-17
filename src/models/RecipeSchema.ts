@@ -1,6 +1,7 @@
 import { RecipeDocument } from "../types/models/Recipe";
-import mongoose, { Model } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { ReviewDocument } from "../types/models/Review";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const recipeSchema = new mongoose.Schema<RecipeDocument>(
   {
@@ -48,6 +49,8 @@ const recipeSchema = new mongoose.Schema<RecipeDocument>(
     },
   },
 );
+
+recipeSchema.plugin(mongoosePaginate);
 
 // adding indexes
 // 1 means apply and -1 means remove
@@ -114,4 +117,4 @@ recipeSchema.virtual("overallRating").get(function () {
 //   },
 //   message: "custom message"
 // }
-export const Recipe: Model<RecipeDocument> = mongoose.model<RecipeDocument>("Recipe", recipeSchema);
+export const Recipe = mongoose.model<RecipeDocument, PaginateModel<RecipeDocument>>("Recipe", recipeSchema, "recipes");
